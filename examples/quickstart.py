@@ -2,6 +2,8 @@
 
 Refer to the jupyter notebooks for more detailed examples of how to use the algorithms.
 """
+
+import gymnasium as gym
 import numpy as np
 import seals  # needed to load "seals/" environments    # noqa: F401
 from stable_baselines3 import PPO

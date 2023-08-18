@@ -3,8 +3,8 @@
 import pathlib
 from typing import Optional
 
-import gym
-from gym.wrappers.monitoring import video_recorder
+import gymnasium as gym
+from gymnasium.wrappers.monitoring import video_recorder
 
 
 class VideoWrapper(gym.Wrapper):

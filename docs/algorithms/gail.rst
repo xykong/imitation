@@ -20,6 +20,7 @@ Detailed example notebook: :doc:`../tutorials/3_train_gail`
     :skipif: skip_doctests
 
     import numpy as np
+    import gymnasium as gym
     import seals  # noqa: F401  # needed to load "seals/" environments
     from stable_baselines3 import PPO
     from stable_baselines3.common.evaluation import evaluate_policy
