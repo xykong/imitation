@@ -19,7 +19,9 @@ from typing import (
 
 import numpy as np
 from stable_baselines3.common.base_class import BaseAlgorithm
+from stable_baselines3.common.callbacks import ConvertCallback
 from stable_baselines3.common.policies import BasePolicy
+from stable_baselines3.common.type_aliases import MaybeCallback
 from stable_baselines3.common.utils import check_for_correct_spaces
 from stable_baselines3.common.vec_env import VecEnv
 
@@ -373,6 +375,7 @@ def generate_trajectories(
     rng: np.random.Generator,
     *,
     deterministic_policy: bool = False,
+    callback: MaybeCallback = None,
 ) -> Sequence[types.TrajectoryWithRew]:
     """Generate trajectory dictionaries from a policy and an environment.
 
@@ -390,12 +393,20 @@ def generate_trajectories(
             action. Note the trajectories might still be non-deterministic if the
             environment has non-determinism!
         rng: used for shuffling trajectories.
+        callback: Callback to trigger on rollout events.
 
     Returns:
         Sequence of trajectories, satisfying `sample_until`. Additional trajectories
         may be collected to avoid biasing process towards short episodes; the user
         should truncate if required.
     """
+    if callback is None:
+        callback = ConvertCallback(None)
+        callback.training_env = venv
+        callback.model = collections.namedtuple("FakeBaseAlgorithm", ["num_timesteps"])(0)
+
+    callback.on_rollout_start()
+
     get_actions = policy_to_callable(policy, venv, deterministic_policy)
 
     # Collect rollout tuples.
@@ -426,6 +437,8 @@ def generate_trajectories(
         acts, state = get_actions(obs, state, dones)
         obs, rews, dones, infos = venv.step(acts)
         assert isinstance(obs, np.ndarray)
+
+        callback.on_step()
 
         # If an environment is inactive, i.e. the episode completed for that
         # environment after `sample_until(trajectories)` was true, then we do
@@ -469,6 +482,8 @@ def generate_trajectories(
         exp_rew = (n_steps,)
         real_rew = trajectory.rews.shape
         assert real_rew == exp_rew, f"expected shape {exp_rew}, got {real_rew}"
+
+    callback.on_rollout_end()
 
     return trajectories
 
