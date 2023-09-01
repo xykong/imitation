@@ -21,7 +21,7 @@ ATARI_REQUIRE = [
     "autorom[accept-rom-license]~=0.6.0",
 ]
 PYTYPE = ["pytype==2022.7.26"] if IS_NOT_WINDOWS else []
-STABLE_BASELINES3 = "stable-baselines3~=2.0.0"
+STABLE_BASELINES3 = "stable-baselines3>=2.0.0"
 
 # Note: the versions of the test and doc requirements should be tightly pinned to known
 #   working versions to make our CI/CD pipeline as stable as possible.
